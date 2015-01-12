@@ -1,0 +1,12 @@
+Source: shellter
+Section: devel
+Priority: extra
+Maintainer: Borja Ruiz <borja@libcrack.so>
+Build-Depends: unzip
+Standards-Version: 3.9.3
+Homepage: http://www.shellterproject.com
+
+Package: shellter
+Architecture: all
+Depends: wine-bin | wine64-bin, ${misc:Depends} 
+Description: A Dynamic ShellCode Injector

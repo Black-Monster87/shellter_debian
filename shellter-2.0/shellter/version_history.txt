@@ -1,0 +1,237 @@
+Shellter v1.0
+...............
+
+Released 27d/5m/2014
+
+
+
+
+Shellter v1.1
+...............
+
+Released 21d/06m/2014
+
+[+] Added Advanced/Basic Mode Selection
+
+[+] Verify that PE image file is indeed a native 32-bit application.
+
+[+] Minor changes in error notifications.
+
+[+] Internal source code optimizations.
+
+
+
+
+Shellter v1.2
+...............
+
+Released 06d/07m/2014
+
+[+] Fixed file share permissions conflicts when injecting to some installers (NSIS).
+
+    Reported by : James Chapman
+
+[+] Added user notification if EntryPoint is not located in the first section.
+
+[+] Internal optimizations.
+
+
+
+
+Shellter v1.3
+...............
+
+Released 26d/07m/2014
+
+[+] Added timed tracing in Basic Mode. 
+    Shellter will trace a random number of instructions, for a maximum time of
+    approximately 30 seconds.
+
+
+
+
+Shellter v1.4
+...............
+
+Released 28d/07m/2014
+
+[+] Fixed not showing logo issue when running Shellter in low resolution. 
+
+    Reported by: Nikolaos Tsapakis
+
+
+
+
+Shellter v1.5
+...............
+
+Released 02d/08m/2014
+
+[+] Fixed a potential error issue during process creation.
+
+[+] Added CREATE_NEW_CONSOLE flag to avoid I/O issues when tracing console applications.
+
+[+] Fixed a potential invalid pointer dereference issue when parsing a handcrafted PE.
+
+
+
+
+Shellter v1.6
+...............
+
+Released 04d/08m/2014
+
+[+] Fixed a potential uninitialized variable access issue.
+
+[+] Minor updates in PE file validation method.
+
+[+] Other minor updates/optimizations.
+
+
+
+
+Shellter v1.7
+...............
+
+Released 06d/08m/2014
+
+[+] Minor updates/optimizations.
+
+
+
+
+Shellter v1.7 Wine Beta #1
+............................
+
+Released 12d/08m/2014
+
+[+] Native Windows & Wine/CrossOver Compatible.
+
+[+] Optimized tracer. 
+    Up to 3 times faster when tracing over code that makes frequent
+    calls to functions outside the PE image. Testing has been applied
+    using this build vs the Windows-Only build by tracing the same PE
+    target for a relatively big number of instructions.
+
+[+] Removed tracing option: 'Start Trace from EntryPoint/System DLL'.
+    This option was mostly for testing and it will probably be replaced
+    with another.
+    This option is still available in the Windows-Only compatible build.
+
+Known issues: In some cases, the tracer might return RMEM_ERROR_02 and stop
+              tracing.You can still use the traced execution flow up to that
+              point and proceed with the injection stage.
+              I am currently trying different approaches to solve issues that
+              might influence the tracing stage, eventhough these are quite rare.
+              These issues don't apply in the Windows-Only compatible build.
+
+
+
+
+Shellter v1.8
+...............
+
+Released 01d/11m/2014
+
+[+] Merged Native Windows & Windows/Wine Tracing Engines.
+
+[+] Added command line support for the Basic Mode.
+    Start Shellter using '--h' argument to get more information regarding 
+    the supported arguments.
+
+[+] Added option to choose Tracing Engine. Only applies under Native Windows.*
+
+[+] Removed tracing option: 'Start Trace from EntryPoint/System DLL'.
+
+Knows issues: See notes in the previous update regarding the Windows/Wine
+              tracing engine. These issues don't apply when choosing the
+              Native Windows tracing engine.
+
+*Note: When running under Wine, the Tracing Engine is selected automatically.
+
+
+
+
+Shellter v1.9
+...............
+
+Released 22d/11m/2014
+
+[+] Automated usage of encoded-payload handlers in Basic Mode.
+    Even when operating under Basic Mode, Shellter will take
+    advantage of this feature that was only available from
+    Advanced Mode so far.
+    Shellter will only change section's permissions if the PE
+    target doesn't support any of the available methods, or if
+    the user changes this setting from the cmdline.
+    
+
+
+[+] Enhanced cmdline support.
+    Allows the user to customise Basic Mode operation and make
+    use of some features and options that were previously only
+    available in Advanced Mode.
+
+*Note: When using the Basic Mode with cmdline flags, if an
+       encoded payload is specified then the user needs to set
+       both the '--enc' flag as well as the '--handler'.
+       Start Shellter using '--h' to see how to use the cmdline
+       options.
+
+[+] Fixed a potential read-out-of-bounds issue in the cmdline
+    parser.
+
+[+] Minor UI and internal optimizations.
+
+
+
+
+Shellter v2.0
+...............
+
+Released 16d/12m/2014
+
+[+] Added user notification about the minimum required Win
+    OS version for the target PE.
+    This allows the user to avoid situations where he makes
+    use of an application that will not run properly in the
+    victim host in case there is an earlier version of
+    Windows.
+
+[+] Enhanced UI with more user-friendly output.
+
+[+] Cmdline updates.
+    Changed help menu switch to '-h' and '--help', and verbose
+    mode to '-v'.
+
+[+] Completely removed manual tracing engine selection.
+    Shellter will pick up the appropriate one depending on 
+    whether you run it in a native Windows host or in Wine.
+    This means that the user is no longer allowed to select
+    the Wine compatible engine when running Shellter in a
+    native Windows host.
+
+[+] All-threads tracing option is not shown as 'Beta' feature.
+
+[+] Various optimizations in both tracing engines.
+
+[+] Updated Wine/Crossover compatible tracing engine.
+    Solved compatibility issues with some applications, and
+    some known issues that were mentioned in the previous
+    updates.
+
+[+] Fixed a shared access violation issue that occured sometimes
+    when updating the CheckSum field in the PE header.
+    This issue didn't affect the rest of the injection process.
+
+[+] Added an icon in the executable.
+
+
+   
+    
+    
+
+
+
+    
+    

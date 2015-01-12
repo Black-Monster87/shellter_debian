@@ -1,0 +1,2 @@
+bin/shellter /usr/bin/
+shellter/* /usr/share/shellter/

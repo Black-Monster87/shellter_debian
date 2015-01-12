@@ -1,0 +1,82 @@
+
+
+1) Does the execution flow return to normal after executing the payload?
+...........................................................................
+
+No. 
+
+Shellter dynamically picks up injection locations based on the execution 
+flow that has been traced and finds where it can overwrite existing code.
+Returning back to normal execution flow would require the use of code caves 
+or to append code in the end of the file as raw or in a new section.
+This would ruin the originality of Shellter, since the injection points would
+rely on very strict rules, that would make writing detection signatures much 
+easier.
+This is how all injectors work out there, and Shellter by design breaks those
+rules.
+Shellter was mainly built to assist the pentester in bypassing AVs in cases 
+where uploading an executable that executes a specific payload is necessary.
+
+
+
+
+2) Does the process die after the payload is executed?
+.........................................................
+
+This actually depends on how the shellcode behaves.
+
+If the shellcode doesn't terminate the process or the thread
+then after executing the payload the process will probably crash.
+This doesn't affect the effectiveness of the payload, since this
+will happen afterwards.
+
+
+
+
+3) Is it possible to execute the payload and still load the application?
+...........................................................................
+
+Yes, under certain circumstances.
+
+In some GUI applications for example you can trace the application until its
+main window is loaded and then kill it by closing its window or pressing on
+its exit button, menu etc...
+
+This is of course something experimental, and in case you use Shellter in this
+way then you should always try to use small payloads and inject at the beginning
+of the last function called in order to try to avoid overwriting code that hasn't
+been traced and so Shellter is not aware of it to forbid injecting there.
+So in this scenario is better to avoid adding junk polymorphic code.
+
+Generally, most functions start with a 'PUSH EBP' instruction, so you can search
+backwards in the final list of injection points available presented to you by
+Shellter.
+
+Once injection has been done you can try to run the application, if it runs,
+then try to close it again using the same way you used before and see if the
+payload is executed.
+
+You can also use a debugger and place a breakpoint there and see if you are
+going to break there before closing the application from its GUI.
+
+
+
+
+4) How long does it take to execute the payload?
+..................................................
+
+Normally, this happens instantly, unless you have chosen the method described 
+above so that it requires user interaction to execute the payload.
+
+Also, in case you have injected junk polymorphic code through the engine of
+Shellter, then the execution of the payload will be delayed due to junk loops
+added.
+
+You can monitor the execution through task manager. As long as the process is
+running then it is probably looping at some place in the middle of the junk
+polymorphic code.
+
+This delay is good in order to bypass AV emulation engines and sandboxes that
+normally only monitor the process for a limited time, but you don't have to use
+it if you don't really want to or if you are testing the scenario described in
+the previous question.
