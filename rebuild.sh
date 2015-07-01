@@ -1,38 +1,47 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-pkgver="2.0"
+pkgver="3.0"
 pkgname="shellter"
 pkgzip="${pkgname}.zip"
 pkgdir="${pkgname}-${pkgver}"
 pkgurl="https://www.shellterproject.com/Downloads/Shellter/Latest/${pkgzip}"
+bold(){ echo -e "\e[1m${1}\e[0m"; }
 
-test -e "${pkgzip}" \
-	&& echo "${pkgzip}: file exists" \
-	&& exit 1
+[[ "$1" == "--force" ]] || {
+    test -e "${pkgzip}" \
+            && echo -n "${pkgzip}: file exists. "   \
+            && echo "Use ${0} --force to overwrite" \
+            && exit 1
 
-test -e "${pkgname}" \
-	&& echo "${pkgzip}: directory exists" \
-	&& exit 1
+    test -e "${pkgname}" \
+            && echo -n "${pkgname}: directory exists. " \
+            && echo "Use ${0} --force to overwrite"     \
+            && exit 1
+}
 
-echo
-echo ">> Creating new release for ${pkgname}-${pkgver}"
-echo ">> Downloading ${pkgurl}"
+[[ -f "${pkgzip}" ]] && rm "${pkgzip}"
+
+# [[ -d "${pkgname}" ]] && rm -rf "${pkgname}"
+
+bold
+bold ">> Creating new release for ${pkgname}-${pkgver}"
+bold ">> Downloading ${pkgurl}"
 wget -U POLLANEGRA --no-check-certificate "${pkgurl}"
 unzip "${pkgzip}"
 
-echo ">> Coping new files from ${pkgname} to ${pkgdir}/${pkgname}/"
-echo cp -r "${pkgname}"/* "${pkgdir}/${pkgname}/"
-echo ">> Coping executable wrapper to ${pkgdir}/bin/shellter"
-echo cp shellter.sh "${pkgdir}/bin/shellter"
-echo ">> Deleting ${pkgzip} and ${pkgname}"
-echo rm -rf "${pkgzip}" "${pkgname}"
+bold ">> Coping new files from ${pkgname} to ${pkgdir}/${pkgname}/"
+cp -r "${pkgname}"/* "${pkgdir}/${pkgname}/"
+bold ">> Coping executable wrapper to ${pkgdir}/bin/shellter"
+cp shellter.sh "${pkgdir}/bin/shellter"
+bold ">> Deleting ${pkgzip} and ${pkgname}"
+rm -rf "${pkgzip}" "${pkgname}"
 
-echo ">> Building debian package ${pkgname}-${pkgver}"
-echo cd "${pkgdir}"
-echo debian/rules clean
-echo debian/rules binary
+bold ">> Building debian package ${pkgname}-${pkgver}"
+cd "${pkgdir}"
+debian/rules clean
+debian/rules binary
 
-echo ">> Done"
+bold ">> Done"
 echo
 
 exit 0
