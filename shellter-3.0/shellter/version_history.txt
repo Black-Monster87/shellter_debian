@@ -27,7 +27,8 @@ Shellter v1.2
 
 Released 06d/07m/2014
 
-[+] Fixed file share permissions conflicts when injecting to some installers (NSIS).
+[+] Fixed file share permissions conflicts when injecting to some installers
+   (NSIS).
 
     Reported by : James Chapman
 
@@ -71,7 +72,7 @@ Released 02d/08m/2014
 
 [+] Added CREATE_NEW_CONSOLE flag to avoid I/O issues when tracing console applications.
 
-[+] Fixed a potential invalid pointer dereference issue when parsing a handcrafted PE.
+[+] Fixed a potential invalid pointer dereference issue when parsing a malformed PE file.
 
 
 
@@ -122,8 +123,9 @@ Known issues: In some cases, the tracer might return RMEM_ERROR_02 and stop
               tracing.You can still use the traced execution flow up to that
               point and proceed with the injection stage.
               I am currently trying different approaches to solve issues that
-              might influence the tracing stage, eventhough these are quite rare.
-              These issues don't apply in the Windows-Only compatible build.
+              might influence the tracing stage, even though these are quite
+	      rare. These issues don't apply in the Windows-Only compatible
+              build.
 
 
 
@@ -220,18 +222,107 @@ Released 16d/12m/2014
     some known issues that were mentioned in the previous
     updates.
 
-[+] Fixed a shared access violation issue that occured sometimes
+[+] Fixed a shared access violation issue that occurred sometimes
     when updating the CheckSum field in the PE header.
     This issue didn't affect the rest of the injection process.
 
 [+] Added an icon in the executable.
 
 
-   
-    
-    
 
 
+Shellter v2.1
+...............
+
+Released 01d/02m/2015
+
+[+] Fixed a couple of potentially bug causing issues.
+
+[+] Added several extra checks to enhance error handling during
+    injection stage.
+
+[+] Displays the name of the PE section where the shellcode was 
+    injected.
+
+[+] Minor updates/optimizations.
+
+
+
+
+Shellter v2.2
+...............
+
+Released 07d/02m/2015
+
+[+] Automatic Backup of the original PE file.
+
+[+] Minor changes in error-display notifications.
+
+
+
+
+Shellter v3.0
+...............
+
+Released 18d/05m/2015
+
+[+] Polymorphic IAT type handlers for encoded payloads.
+    This is a major upgrade which dramatically enhances
+    polymorphism in the final output. This feature breaks
+    down the stubs of those handlers and binds them with
+    thread context aware polymorphic code.
+
+[+] Introduced Auto/Manual mode selection.
+    This was a necessary change since the originally called 
+    'Basic' mode was far from basic for some time now.
+    So Basic/Advanced mode selection has been dropped.
+
+[+] Introduced injection verification stage.
+    After successful injection, Shellter will verify that the
+    first instruction of the injected code will be reached
+    successfully.
+    If polymorphic code has been added, then the first instruction
+    refers to that and not to the effective payload. 	
+
+[+] Introduced '--polyIAT' switch and the option to obfuscate
+    the chosen IAT type handler in 'Auto' and 'Manual' modes
+    respectively.
+    They both take advantage of the same feature.
+
+*Note: When using Auto mode without cmdline arguments, this
+       feature is enabled by default. 
+       If cmdline arguments are used, the aforementioned
+       switch has to be set to enable this feature.
+
+[+] When using Shellter with Wine, the associated operation
+    mode is not shown as 'Beta' anymore.
+      
+[+] Several optimizations in adjusting IAT type handlers.
+
+[+] Several internal design optimizations.
+
+[+] Some minor changes/updates/optimizations.
+
+
+
+
+Shellter v3.1
+...............
+
+Released 30d/05m/2015
+
+[+] Automatic adjustment of the console fonts when running Shellter
+    in Windows >= Vista. Applies also in Wine with the appropriate
+    settings.
+	
+[+] Shellter console is now automatically positioned at the centre
+    of the main monitor.
+
+	
+[+] Fixed a typo in IAT handler obfuscation stage: T.C.A was showing
+    as C.T.A.
+
+[+] Displays the amount of time elapsed during IAT handler obfuscation.
 
     
     

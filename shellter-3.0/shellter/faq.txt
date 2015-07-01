@@ -1,7 +1,7 @@
 
 
 1) Does the execution flow return to normal after executing the payload?
-...........................................................................
+=========================================================================
 
 No. 
 
@@ -19,9 +19,8 @@ where uploading an executable that executes a specific payload is necessary.
 
 
 
-
 2) Does the process die after the payload is executed?
-.........................................................
+=======================================================
 
 This actually depends on how the shellcode behaves.
 
@@ -32,9 +31,8 @@ will happen afterwards.
 
 
 
-
 3) Is it possible to execute the payload and still load the application?
-...........................................................................
+=========================================================================
 
 Yes, under certain circumstances.
 
@@ -46,7 +44,7 @@ This is of course something experimental, and in case you use Shellter in this
 way then you should always try to use small payloads and inject at the beginning
 of the last function called in order to try to avoid overwriting code that hasn't
 been traced and so Shellter is not aware of it to forbid injecting there.
-So in this scenario is better to avoid adding junk polymorphic code.
+So in this scenario is better to avoid adding junk polymorphic code or IAT handlers.
 
 Generally, most functions start with a 'PUSH EBP' instruction, so you can search
 backwards in the final list of injection points available presented to you by
@@ -61,9 +59,8 @@ going to break there before closing the application from its GUI.
 
 
 
-
 4) How long does it take to execute the payload?
-..................................................
+=================================================
 
 Normally, this happens instantly, unless you have chosen the method described 
 above so that it requires user interaction to execute the payload.
@@ -77,6 +74,6 @@ running then it is probably looping at some place in the middle of the junk
 polymorphic code.
 
 This delay is good in order to bypass AV emulation engines and sandboxes that
-normally only monitor the process for a limited time, but you don't have to use
-it if you don't really want to or if you are testing the scenario described in
-the previous question.
+normally only monitor the process for a limited time. You don't have to
+use it if you don't really want to or if you are testing the scenario described in
+the previous question. It is however, recommended to make use of this feature.

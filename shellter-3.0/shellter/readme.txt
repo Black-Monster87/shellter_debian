@@ -1,7 +1,7 @@
 
 	               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	               @@@@@@@@@@          Shellter v2.0         @@@@@@@@@
+	               @@@@@@@@@@          Shellter v3.1         @@@@@@@@@
 	               @@@@@@@@          Coded By kyREcon          @@@@@@@
 	               @@@@@@@@@      www.ShellterProject.com     @@@@@@@@
 	               @@@@@@@@@@@@@@@@@@@.C@@@@@@@@@@C.:@@@@@@@@@@@@@@@@@
@@ -55,34 +55,36 @@
     [4]  Why do I need Shellter?
     [5]  What types of apps can I use? 
     [6]  Can I use encoded/self-decrypting payloads?
-    [7]  What about self-modifying code?
-    [8]  What about relocations?
-    [9]  What about Multi-Thread Applications?
-    [10] what about Anti-Reversing tricks?
-    [11] What if the target process dies during tracing?
-    [12] What if an internal engine related error occurs?
-    [13] How do execution flow filters work?
-    [14] How much time does it need for tracing and log filtering?
-    [15] What options does Shellter provide? 
-    [16] System Requirements 
-    [17] What should I do if I want to send feedback?
-    [18] What should I do if I want to report a bug?
-    [19] What should I do if I don't like it?
+    [7]  What is Thread Context Aware polymorphic code?
+    [8]  What about self-modifying code?
+    [9]  What about relocations?
+    [10] What about Multi-Thread Applications?
+    [11] what about Anti-Reversing tricks?
+    [12] What if the target process dies during tracing?
+    [13] What if an internal engine related error occurs?
+    [14] How do execution flow filters work?
+    [15] How much time does it need for tracing and log filtering?
+    [16] What options does Shellter provide?
+    [17] What is the purpose of verification stage?
+    [18] System Requirements 
+    [19] What should I do if I want to send feedback?
+    [20] What should I do if I want to report a bug?
+    [21] What should I do if I don't like it?
 
 
 
 [1] What is it?  
 ================
 
-Shellter is a dynamic shellcode injection tool aka dynamic PE infector. It can 
-be used in order to inject shellcode into native Windows applications (currently
-32-bit apps only). The shellcode can be something yours or something generated
-through a framework, such as Metasploit.
+Shellter is a dynamic shellcode injection tool aka dynamic PE infector. It can
+be used in order to inject shellcode into native Windows applications
+(currently 32-bit apps only). The shellcode can be something yours or something
+generated through a framework, such as Metasploit.
 
 Shellter takes advantage of the original structure of the PE file and doesn't
 apply any  modification such as changing memory access permissions in sections
-(unless the user wants to, or he operates under Basic Mode), adding an extra
-section with RWE access, and whatever would look dodgy under an AV scan.
+(unless the user wants to), adding an extra section with RWE access, and
+whatever would look dodgy under an AV scan.
 
 
 [2] How does it work?
@@ -90,23 +92,23 @@ section with RWE access, and whatever would look dodgy under an AV scan.
 
 Shellter uses a unique dynamic approach which is based on the execution flow of
 the target application. This means that no static/predefined locations are used
-for shellcode injection. Shellter will launch and trace the target, while at the
-same time will log the execution flow of the application.
+for shellcode injection. Shellter will launch and trace the target, while at
+the same time will log the execution flow of the application.
 
 
 [3] What does it trace?
 ========================
 
 Shellter traces the entire execution flow that occurs in userland. 
-That means, code inside the target application itself (PE image), and code outside
-of it that might be in a system dll or on a heap, etc...
+That means, code inside the target application itself (PE image), and code
+outside of it that might be in a system dll or on a heap, etc...
 This happens in order to ensure that functions actually belonging to the target
-executable, but are only used as callback functions for Windows APIs will not be
-missed.
+executable, but are only used as callback functions for Windows APIs will not
+be missed.
 
-During tracing, Shellter will not log any instructions that are not in the memory
-range of the PE image of the target application, since these cannot be used as a
-reference to permanently inject the shellcode.
+During tracing, Shellter will not log any instructions that are not in the
+memory range of the PE image of the target application, since these cannot be
+used as a reference to permanently inject the shellcode.
 
 
 [4] Why do I need Shellter?
@@ -125,10 +127,10 @@ create by yourself as your own custom templates.
 You can also use applications that make use of proprietary DLLs if those are
 not required to create the process in the first place, and are normally loaded
 later on if needed to execute code for a specific task. In case you select an
-application that needs one or more proprietary DLLs to create the process in the
-first place then you will have to include them in the same directory from where
-you load the main executable. However, this is not recommended since it is more
-convenient to have just a single executable to upload to the target.
+application that needs one or more proprietary DLLs to create the process in
+the first place then you will have to include them in the same directory from
+where you load the main executable. However, this is not recommended since it
+is more convenient to have just a single executable to upload to the target.
 
 
 [5] What types of apps can I use? 
@@ -143,9 +145,9 @@ containing executable code etc..
 Another reason why you should avoid packed applications is because advanced
 packers will also check for modifications of the file, so you will probably
 just break it. Advanced packers also perform various anti-reversing tricks
-which will detect Shellter's debugging engine during tracing. If you are a lover
-of packers, you can first perform the injection and then pack the application
-with the packer of your choice.
+which will detect Shellter's debugging engine during tracing. If you are a
+lover of packers, you can first perform the injection and then pack the
+application with the packer of your choice.
 
 The best bet is to use completely legitimate looking applications (ideally not
 packed) that are not flagged by any AV vendor for any reason. 
@@ -160,6 +162,7 @@ Shellter also supports encoded/self-decrypting payloads by taking advantage of
 the Imports Table of the application. It will look for specific imported APIs
 that can be used on runtime to execute a self-decrypting payload without doing
 any modifications in the section's characteristics from inside the PE Header.
+These handlers can also by dynamically obfuscated (see [7]).
 
 At the moment 7 methods are supported for loading encoded payloads:
 
@@ -185,7 +188,7 @@ This last option has been added in order to provide more flexibility to the
 user in case he still wants to use a specific encoded payload along with the
 same PE file.
 
-When operating in Basic Mode, without cmdline arguments, Shellter will
+When operating in Auto Mode, without cmdline arguments, Shellter will
 automatically try to find all available methods and will use one at random.
 
 If, the user has chosen to use these methods through the cmdline, but the
@@ -193,7 +196,16 @@ PE target doesn't support any of them, then Shellter will notify the user
 and will automatically switch to section's characteristics modification.
 
 
-[7] What about self-modifying code?
+[7] What is Thread Context Aware polymorphic code?
+===================================================
+This feature was introduced in Shellter v3.0 in order to enhance polymorphism
+in the final output.
+Shellter will break down a given algorithm or code block and will mix its
+effective instructions with dynamically generated polymorphic code that does
+not interfere with the logic of the original algorithm.
+
+
+[8] What about self-modifying code?
 ====================================
 
 Shellter is capable of recognizing self-modifying code and exclude those
@@ -215,12 +227,12 @@ self-modifying code. You can then stop the tracing and use the already logged
 execution flow path.
 
 However, as already mentioned if you use legitimate and not packed applications,
-you will hardly find any cases of self-modifying code, but even if you do Shellter
-can handle this for you quite well either during tracing or later during the
-filtering stages.
+you will hardly find any cases of self-modifying code, but even if you do
+Shellter can handle this for you quite well either during tracing or later during
+the filtering stages.
 
 
-[8] What about relocations?
+[9] What about relocations?
 ============================
 
 Shellter, will disable dynamic ImageBase in the target executable in order to
@@ -228,15 +240,15 @@ avoid breaking your shellcode in case you inject it in an area where fixups
 would normally occur during process loading.
 
 
-[9] What about Multi-Thread Applications?
+[10] What about Multi-Thread Applications?
 ==========================================
 
 Shellter is capable of keeping track of all the new threads created and trace
 the executed instructions.
 Tracing all the threads is optional, and must be activated by the user.
 
-However, Shellter will always notify the user when a new thread has been created,
-as well as upon its termination.
+However, Shellter will always notify the user when a new thread has been
+created, as well as upon its termination.
 
 Generally, enabling Multi-Thread tracing is not necessary, but it can be of
 vital importance in some scenarios.
@@ -247,27 +259,29 @@ The main function will start a new thread to execute B and then when B is done,
 the main function which, of course runs in the main thread, calls function A.
 
 Now, in this case if Multi-Thread tracing was not enabled since Shellter didn't
-keep track of function B it will not know later during the filtering stages that
-bellow A there is another function that is actually executed before A so it will
-allow the user to start injecting from somewhere inside function A which will
-probably cause to partially overwrite function B.
+keep track of function B it will not know later during the filtering stages
+that bellow A there is another function that is actually executed before A so it
+will allow the user to start injecting from somewhere inside function A which
+will probably cause to partially overwrite function B.
 
-But, since function B is executed before, this would break the execution before we
-reach our shellcode.
+But, since function B is executed before, this would break the execution before
+we reach our shellcode.
 
 As said, this is not a scenario you will have to deal with often. 
-However, since Shellter will notify the user whenever a new thread is created, the
-user can also choose next time to enable Multi-Thread tracing next time he uses the
-same PE target.
+However, since Shellter will notify the user whenever a new thread is created,
+the user can also choose next time to enable Multi-Thread tracing next time he
+uses the same PE target.
 
 
-[10] what about Anti-Reversing tricks?
+[11] what about Anti-Reversing tricks?
 ======================================
 
--When running Shellter under Wine this feature is disabled for compatibility reasons.-
+-When running Shellter under Wine this feature is disabled for compatibility
+reasons.-
 
-Usually non-packed applications don't implement anti-reversing or anti-debugging
-tricks.
+Usually non-packed applications don't implement anti-reversing or
+anti-debugging tricks.
+
 However, Shellter is able to eliminate some basic debugging artifacts.
 
 Currently Shellter clears the following PEB members:
@@ -279,7 +293,7 @@ Eventhough tracing code that implements such tricks is not what Shellter
 was built for, I might add support for more of them in the future.
 
 
-[11] What if the target process dies during tracing?
+[12] What if the target process dies during tracing?
 ====================================================
 
 Shellter will notify you about this and will give you the option to use the
@@ -287,7 +301,7 @@ already logged execution flow. In fact, you can kill the target process from
 task manager, without affecting Shellter.
 
 
-[12] What if an internal engine related error occurs?
+[13] What if an internal engine related error occurs?
 ======================================================
 
 Shellter will notify you about this, by displaying a proprietary error message
@@ -297,12 +311,12 @@ flow.
 You can choose to notify the author about this.
 
 
-[13] How do execution flow filters work?
+[14] How do execution flow filters work?
 =========================================
 
 Once tracing has finished, or stopped by the user or for any other reason,
 Shellter will trigger the 1st stage filtering. During this stage all
-unnecessary logs will be eliminated in order to enhance the 2nd stafe filtering
+unnecessary logs will be eliminated in order to enhance the 2nd stage filtering
 that performs more complex checks over the logged execution flow.
 
 The 2nd stage filtering takes in consideration various parameters such as the
@@ -310,7 +324,7 @@ size of the polymorphic code added, the size of the actual payload, the
 execution flow, etc...
 
 
-[14] How much time does it need for tracing and log filtering?
+[15] How much time does it need for tracing and log filtering?
 ===============================================================
 
 Tracing time depends of the amount of instructions that the user wants to
@@ -335,7 +349,7 @@ Filtering speed also depends on the CPU capabilities and the complexity of the
 code.
 
 
-[15] What options does Shellter provide? 
+[16] What options does Shellter provide? 
 =========================================
 
 Read the Version_History.txt for more information about the most recent
@@ -347,10 +361,10 @@ run it in a native Windows host or in Wine/Crossover.
 Shellter offers two main modes of operation as described below.
 
 
-Basic Mode:
+Auto Mode:
 -----------
 
-Basic Mode supports command line. Run Shellter with -h argument to see more
+Auto Mode supports command line. Run Shellter with -h argument to see more
 information about it.
 
 If command line is not used, the following options must be set individually by
@@ -362,27 +376,30 @@ a) Select target executable.
 b) Select payload.
 
 
-When operating in Basic mode, Shellter will trace a random number of instructions for
-a maximum time of approximately 30 seconds.
+When operating in Auto mode, Shellter will trace a random number of
+instructions for a maximum time of approximately 30 seconds.
 
 
-If command line is not used the following features/options are automatically set as follows:
+If command line is not used the following features/options are automatically
+set as follows:
 
 i) Traces all threads in the target.
 
 ii) Handles all payloads as encoded.
 
-iii) Automates usage of encoded-payload handlers.
+iii) Automates usage of encoded-payload handlers (section 6).
 
-iv) Generates and binds junk polymorphic code.
+iv) Obfuscates those handlers by binding them with polymorphic code.
 
-v) Doesn't show real-time tracing. 
+v) Generates and binds junk polymorphic code.
+
+vi) Doesn't show real-time tracing. 
 
 
 
 
-Advanced Mode:
----------------
+Manual Mode:
+-------------
 
 a) Choose target executable. This will host your shellcode.
 
@@ -396,8 +413,8 @@ d) Choose to detect self-modifying code on tracing.
     d.2) If option 'd.1' is enabled you can choose to stop tracing if
          self-modifying code is detected.
 
-e) Trace just the main or all of the threads if more than one are created during
-    tracing.
+e) Trace just the main or all of the threads if more than one are created
+   during tracing.
 
 f) Show real time tracing. 
 
@@ -408,17 +425,35 @@ h) Enable encoded payload handling or not.
    h.1) Choose between Encoded Payload Handlers or Section's Characteristics
         modification.
 
+   h.2) If Encoded Payload Handlers are used (see [6]), the user can also
+        choose to bind them with extra polymorphic code (see [7]).
+
 i) Use User/Engine Polymorphic code.
 
-    i.1) If user creates its own polycode and option 'b' was enabled, he can
-        take advantage of the logged thread context information.
+    i.1) If the user creates his own polycode and option 'b' was enabled, he
+         can take advantage of the logged thread context information.
 
 j) Show Disassembled Entries
 
 k) Select address to inject your shellcode.
 
 
-[16] System Requirements 
+[17] What is the purpose of the verification stage?
+====================================================
+
+Once injection has been completed successfully, Shellter will run the target
+PE in order to verify that the execution flow will reach indeed the first
+instruction of the injected code.
+If polymorphic code has been used, then this refers to that and not to the
+first instruction of the effective payload.
+This test will run for a maximum time of 10 seconds.
+If user interaction is required in order for the execution flow to reach
+that instruction, then this test will not be able to perform the verification
+unless you perform the necessary interaction with the application.
+However, this does not mean that the injection process has failed.
+
+
+[18] System Requirements 
 =========================
 
 It is recommended that you use Win XP SP3 (32/64-bit) and above.
@@ -432,21 +467,21 @@ It is recommended that you use Win XP SP3 (32/64-bit) and above.
     Tracing 10 million instructions with Thread Context logging => ~ 270 MBs
 
 
-[17] What should I do if I want to send feedback?
+[19] What should I do if I want to send feedback?
 ==================================================
 
-Send an email with 'Subject: Shellter Feedback - Short Description' to 
+Send an email with 'Subject: Shellter Feedback - <Short Description>' to 
 ShellterProject@hotmail.com and I will be happy to go through it.
 
-Please don't send emails complaining about stupid things, like the color of the
-fonts etc..  ...alright for the sake of Internet trolling, you can send those
-emails, but most probably I will not have the time to troll back. 
+Please don't send emails complaining about stupid things, like the colour of
+the fonts etc..  ...alright for the sake of Internet trolling, you can send
+those emails, but most probably I will not have the time to troll back. 
 
 
-[18] What should I do if I want to report a bug?
+[20] What should I do if I want to report a bug?
 =================================================
 
-Send an email with 'Subject: Shellter Bug - Short Description' to
+Send an email with 'Subject: Shellter Bug - <Short Description>' to
 ShellterProject@hotmail.com and I will be happy to go through it.
 
 
@@ -462,13 +497,13 @@ Please include:
         VirtualProtect etc..)
     7.- See point '2' again and ensure that you have included everything. :O)
 
-Any information provided by you will not be made public. It will only be used in
-order to troubleshoot Shellter, and it is necessary in order to determine if 
+Any information provided by you will not be made public. It will only be used
+in order to troubleshoot Shellter, and it is necessary in order to determine if 
 there is really a 'bug' in Shellter or there was something wrong done by the
 user.
 
 
-[19] What should I do if I don't like it?
+[21] What should I do if I don't like it?
 ==========================================
 
 Delete it. Remember, that's free too!
